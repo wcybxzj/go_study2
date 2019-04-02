@@ -11,10 +11,14 @@ type result struct {
 	err error
 	output []byte
 }
+//例子3:
+//执行1个cmd,让它在一个协程里去执行, 让它执行2秒: sleep 2; echo hello;
+//1秒的时候, 我们杀死cmd
 
+//以前我为实现一样的功能写了1个RunCmdAsyncWithTimeout()方法实现golang执行bash带超时功能
+//其实根本不用怎么麻烦 用exec.CommandContext()就能实现一样的功能
 func main() {
-	//  执行1个cmd, 让它在一个协程里去执行, 让它执行2秒: sleep 2; echo hello;
-	// 1秒的时候, 我们杀死cmd
+
 	var (
 		ctx context.Context
 		cancelFunc context.CancelFunc
@@ -23,20 +27,21 @@ func main() {
 		res *result
 	)
 
-	// 创建了一个结果队列
+	//创建了一个结果队列用于读取子协程的输出
 	resultChan = make(chan *result, 1000)
 
+	// 创建上下文
 	// context:   chan byte
 	// cancelFunc:  close(chan byte)
-
 	ctx, cancelFunc = context.WithCancel(context.TODO())
 
+	//创建执行命令的协程
 	go func() {
 		var (
 			output []byte
 			err error
 		)
-		cmd = exec.CommandContext(ctx, "C:\\cygwin64\\bin\\bash.exe", "-c", "sleep 2;echo hello;")
+		cmd = exec.CommandContext(ctx, "/bin/bash", "-c", "sleep 2;echo hello;")
 
 		// 执行任务, 捕获输出
 		output, err = cmd.CombinedOutput()

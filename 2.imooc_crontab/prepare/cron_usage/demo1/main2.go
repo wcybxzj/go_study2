@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+//golang 实现5秒后调用1个程序
 func main() {
 	var (
 		expr *cronexpr.Expression
@@ -14,11 +15,7 @@ func main() {
 		nextTime time.Time
 	)
 
-	// linux crontab
-	// 秒粒度, 年配置(2018-2099)
-	// 哪一分钟（0-59），哪小时（0-23），哪天（1-31），哪月（1-12），星期几（0-6）
-
-	// 每隔5分钟执行1次
+	//golang crontab 支持7位设置计划任务时间
 	if expr, err = cronexpr.Parse("*/5 * * * * * *"); err != nil {
 		fmt.Println(err)
 		return
@@ -28,13 +25,17 @@ func main() {
 
 	// 当前时间
 	now = time.Now()
+
 	// 下次调度时间
 	nextTime = expr.Next(now)
+
+	//fmt.Println(now, nextTime)
 
 	// 等待这个定时器超时
 	time.AfterFunc(nextTime.Sub(now), func() {
 		fmt.Println("被调度了:", nextTime)
 	})
 
+	//防止还没到达定时时间 主协程退出
 	time.Sleep(5 * time.Second)
 }

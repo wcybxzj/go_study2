@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+//例子2:golang执行cmd 获取命令输出
 func main() {
 	var (
 		cmd *exec.Cmd
@@ -13,11 +14,14 @@ func main() {
 	)
 
 	// 生成Cmd
-	cmd = exec.Command("C:\\cygwin64\\bin\\bash.exe", "-c", "/usr/bin/python xxx.py")
+	cmd = exec.Command(
+		"/bin/bash",
+		"-c",
+		"/usr/bin/php /root/www/go_www/src/go_study2/2.imooc_crontab/prepare/cmd_usage/demo2/1.php")
 
 	// 执行了命令, 捕获了子进程的输出( pipe )
 	if output, err = cmd.CombinedOutput(); err != nil {
-		fmt.Println(err)
+		fmt.Println("error:"+err.Error())
 		return
 	}
 

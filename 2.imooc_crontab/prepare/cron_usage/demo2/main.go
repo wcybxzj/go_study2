@@ -12,9 +12,8 @@ type CronJob struct {
 	nextTime time.Time	// expr.Next(now)
 }
 
+// 需要有1个调度协程, 它定时检查所有的Cron任务, 谁过期了就执行谁
 func main() {
-	// 需要有1个调度协程, 它定时检查所有的Cron任务, 谁过期了就执行谁
-
 	var (
 		cronJob *CronJob
 		expr *cronexpr.Expression
@@ -70,11 +69,16 @@ func main() {
 			}
 
 			// 睡眠100毫秒
+			//方案1:sleep来进行睡眠
+
+			//方案2:select+NewTimer：优点是select可以监控多个超时或者channel
 			select {
 			case <- time.NewTimer(100 * time.Millisecond).C:	// 将在100毫秒可读，返回
 			}
 		}
 	}()
 
+
+	//避免主协程退出
 	time.Sleep(100 * time.Second)
 }
