@@ -1,0 +1,58 @@
+Go名库讲解-xorm
+
+第一课:常见用法讲解
+主要特性:
+
+1.数据表的结构增量同步
+xorm中定义的表结构会增量同步到mysql,只会增加字段不会删除或者修改表结构
+
+2.LRU规则的缓存器:
+
+3.数据表乐观锁:百度乐观锁
+
+4.install
+
+go get github.com/go-xrom/xorm
+==========================================================
+
+第二课:高级用法讲解
+使用Session来进行事物:
+sess := x.NewSession()
+
+sess.Begin()
+
+sess.Update()
+
+sess.Insert()
+
+sess.RollBack()
+
+sess.Commit()
+==========================================================
+
+统计记录条数:
+x.Count(new(Account))
+x.Where("id>10").Count(new(Account))
+==========================================================
+
+迭代查询:
+迭代Account表
+方式1:
+x.Iterate(new(Account),func (idx int, bean interface{}){
+    fmt.Printf("%d")
+})
+
+方式2:
+rows, err:=x.Rows(new(Account))
+
+==========================================================
+只返回name列:
+x.Cols("name").Iterate(new(Account),...)
+
+只忽略name列:
+x.Omit("name").Iterate(new(Account),...)
+
+偏移量:获取第3到第5条数据
+x.Limit(3,2).Iterate(new(Account),...)
+2:数据从头向右边移动2个数据,意思就是从第3条数据开始
+3:获取3条数据
