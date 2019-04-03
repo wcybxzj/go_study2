@@ -15,7 +15,8 @@ func main() {
 
 	// 客户端配置
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"},
+//		Endpoints: []string{"36.111.184.221:2379"},
+		Endpoints: []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 

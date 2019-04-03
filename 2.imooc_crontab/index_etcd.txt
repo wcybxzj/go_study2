@@ -1,0 +1,51 @@
+etcd:服务发现/集群状态/配置同步/分布式锁
+=====================================================================================
+1.启动etcd　
+方法1:
+./etcd
+
+方法2:
+这种写法可以支持把服务对外网进行服务
+./etcd --listen-client-urls 'http://0.0.0.0:2379' --advertise-client-urls 'http://0.0.0.0:2379'
+=====================================================================================
+2.连接etcd
+vim bash.bashrc
+export ETCDCTL_API=3
+./etcdctl
+或者
+ETCDCTL_API ./etcdctl
+=====================================================================================
+3.API操作
+
+终端1:
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "name" "owen"
+OK
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl get "name"
+name
+owen
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl del "name"
+1
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl get "name"
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "/cron/jobs/job1" "{..job1}"
+OK
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "/cron/jobs/job2" "{..job2}"
+OK
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl get "/cron/jobs/" --prefix
+/cron/jobs/job1
+{..job1}
+/cron/jobs/job2
+{..job2}
+
+./etcdctl watch -h
+
+./etcdctl get -h
+
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "/cron/jobs/job2" "{..1111}"
+PUT
+/cron/jobs/job2
+{..1111}
+
+
+终端1:
+./etcdctl watch "/cron/jobs/" --prefix
+=====================================================================================
