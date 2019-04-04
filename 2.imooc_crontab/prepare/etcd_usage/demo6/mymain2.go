@@ -1,29 +1,33 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"go.etcd.io/etcd/clientv3"
 	"time"
-	"fmt"
-	"context"
 )
 
+//租约
+////给一个key关联1个10秒的租约
+//启动一个协程来给这个key,每秒续租来防止key被淘汰
 func main() {
 	var (
-		config clientv3.Config
-		client *clientv3.Client
-		err error
-		lease clientv3.Lease
+		config         clientv3.Config
+		client         *clientv3.Client
+		err            error
+		lease          clientv3.Lease
 		leaseGrantResp *clientv3.LeaseGrantResponse
-		leaseId clientv3.LeaseID
-		putResp *clientv3.PutResponse
-		getResp *clientv3.GetResponse
-		keepResp *clientv3.LeaseKeepAliveResponse
-		keepRespChan <-chan *clientv3.LeaseKeepAliveResponse
-		kv clientv3.KV
+		leaseId        clientv3.LeaseID
+		putResp        *clientv3.PutResponse
+		getResp        *clientv3.GetResponse
+		keepResp       *clientv3.LeaseKeepAliveResponse
+		keepRespChan   <-chan *clientv3.LeaseKeepAliveResponse
+		kv             clientv3.KV
 	)
 
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		//		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -45,7 +49,16 @@ func main() {
 	// 拿到租约的ID
 	leaseId = leaseGrantResp.ID
 
-	// 5秒后会取消自动续租
+	//测试1:代码有问题我懒的看为什么
+	//续租5秒,停止了续租,原来10秒的生命周期,最终10+5=15秒的生命周期
+	//ctx,_ := context.WithTimeout(context.TODO(), 5*time.Second)
+	//if keepRespChan, err = lease.KeepAlive(ctx, leaseId); err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+
+	//测试2:
+	//每秒续租一次
 	if keepRespChan, err = lease.KeepAlive(context.TODO(), leaseId); err != nil {
 		fmt.Println(err)
 		return
@@ -55,16 +68,16 @@ func main() {
 	go func() {
 		for {
 			select {
-			case keepResp = <- keepRespChan:
+			case keepResp = <-keepRespChan:
 				if keepRespChan == nil {
 					fmt.Println("租约已经失效了")
 					goto END
-				} else {	// 每秒会续租一次, 所以就会受到一次应答
+				} else { // 每秒会续租一次, 所以就会受到一次应答
 					fmt.Println("收到自动续租应答:", keepResp.ID)
 				}
 			}
 		}
-		END:
+	END:
 	}()
 
 	// 获得kv API子集

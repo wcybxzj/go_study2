@@ -1,23 +1,25 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"go.etcd.io/etcd/clientv3"
 	"time"
-	"fmt"
-	"context"
 )
 
+//遍历"/cron/jobs/"中所有的kvs
 func main() {
 	var (
-		config clientv3.Config
-		client *clientv3.Client
-		err error
-		kv clientv3.KV
+		config  clientv3.Config
+		client  *clientv3.Client
+		err     error
+		kv      clientv3.KV
 		getResp *clientv3.GetResponse
 	)
 
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		//		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -36,7 +38,7 @@ func main() {
 	// 读取/cron/jobs/为前缀的所有key
 	if getResp, err = kv.Get(context.TODO(), "/cron/jobs/", clientv3.WithPrefix()); err != nil {
 		fmt.Println(err)
-	} else {	// 获取成功, 我们遍历所有的kvs
+	} else { // 获取成功, 我们遍历所有的kvs
 		fmt.Println(getResp.Kvs)
 	}
 }

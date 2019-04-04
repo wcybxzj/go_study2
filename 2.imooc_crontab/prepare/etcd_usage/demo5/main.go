@@ -1,25 +1,27 @@
 package main
 
 import (
-	"go.etcd.io/etcd/clientv3"
-	"time"
-	"fmt"
 	"context"
+	"fmt"
+	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
+	"time"
 )
 
+//删除
 func main() {
 	var (
-		config clientv3.Config
-		client *clientv3.Client
-		err error
-		kv clientv3.KV
+		config  clientv3.Config
+		client  *clientv3.Client
+		err     error
+		kv      clientv3.KV
 		delResp *clientv3.DeleteResponse
-		kvpair *mvccpb.KeyValue
+		kvpair  *mvccpb.KeyValue
 	)
 
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		//		Endpoints: []string{"36.111.184.221:2379"}, // 集群列表
+		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -33,6 +35,7 @@ func main() {
 	kv = clientv3.NewKV(client)
 
 	// 删除KV
+	//  clientv3.WithFromKey(): 从这个key开始
 	if delResp, err = kv.Delete(context.TODO(), "/cron/jobs/job1", clientv3.WithFromKey(), clientv3.WithLimit(2)); err != nil {
 		fmt.Println(err)
 		return

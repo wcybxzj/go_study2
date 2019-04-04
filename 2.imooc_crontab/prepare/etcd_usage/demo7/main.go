@@ -1,30 +1,31 @@
 package main
 
 import (
-	"go.etcd.io/etcd/clientv3"
-	"time"
-	"fmt"
 	"context"
+	"fmt"
+	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/mvcc/mvccpb"
+	"time"
 )
 
 func main() {
 	var (
-		config clientv3.Config
-		client *clientv3.Client
-		err error
-		kv clientv3.KV
-		watcher clientv3.Watcher
-		getResp *clientv3.GetResponse
+		config             clientv3.Config
+		client             *clientv3.Client
+		err                error
+		kv                 clientv3.KV
+		watcher            clientv3.Watcher
+		getResp            *clientv3.GetResponse
 		watchStartRevision int64
-		watchRespChan <-chan clientv3.WatchResponse
-		watchResp clientv3.WatchResponse
-		event *clientv3.Event
+		watchRespChan      <-chan clientv3.WatchResponse
+		watchResp          clientv3.WatchResponse
+		event              *clientv3.Event
 	)
 
 	// 客户端配置
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"},
+		//		Endpoints: []string{"36.111.184.221:2379"},
+		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -69,7 +70,7 @@ func main() {
 	fmt.Println("从该版本向后监听:", watchStartRevision)
 
 	ctx, cancelFunc := context.WithCancel(context.TODO())
-	time.AfterFunc(5 * time.Second, func() {
+	time.AfterFunc(5*time.Second, func() {
 		cancelFunc()
 	})
 
