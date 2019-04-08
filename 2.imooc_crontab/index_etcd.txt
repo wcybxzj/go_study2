@@ -15,7 +15,7 @@ export ETCDCTL_API=3
 或者
 ETCDCTL_API ./etcdctl
 =====================================================================================
-3.API操作
+3.API基本操作
 
 终端1:
 root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "name" "owen"
@@ -36,16 +36,28 @@ root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl get "/cron/jobs/" --prefix
 /cron/jobs/job2
 {..job2}
 
+4.API  watch操作
 ./etcdctl watch -h
-
 ./etcdctl get -h
 
+测试1:监控一个key的变化
+终端1:
 root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "/cron/jobs/job2" "{..1111}"
 PUT
 /cron/jobs/job2
 {..1111}
 
+终端2:
+./etcdctl watch "/cron/jobs/job2"
 
+
+测试2:监控一个前缀下的很多key的变化
 终端1:
+root@177:~/soft/etcd-v3.3.9-linux-amd64# ./etcdctl put "/cron/jobs/job2" "{..1111}"
+PUT
+/cron/jobs/job2
+{..1111}
+
+终端2:
 ./etcdctl watch "/cron/jobs/" --prefix
 =====================================================================================

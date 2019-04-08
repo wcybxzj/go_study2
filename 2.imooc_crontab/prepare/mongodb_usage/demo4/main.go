@@ -9,6 +9,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/mongo/findopt"
 )
 
+
 // 任务的执行时间点
 type TimePoint struct {
 	StartTime int64	`bson:"startTime"`
@@ -29,6 +30,7 @@ type FindByJobName struct {
 	JobName string `bson:"jobName"`	// JobName赋值为job10
 }
 
+//查询数据
 func main() {
 	// mongodb读取回来的是bson, 需要反序列为LogRecord对象
 	var (
@@ -41,7 +43,7 @@ func main() {
 		record *LogRecord
 	)
 	// 1, 建立连接
-	if client, err = mongo.Connect(context.TODO(), "mongodb://36.111.184.221:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
+	if client, err = mongo.Connect(context.TODO(), "mongodb://127.0.0.1:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
 		fmt.Println(err)
 		return
 	}

@@ -11,8 +11,8 @@ import (
 
 // 任务的执行时间点
 type TimePoint struct {
-	StartTime int64	`bson:"startTime"`
-	EndTime int64	`bson:"endTime"`
+	StartTime int64	`bson:"startTime"` //执行开始时间
+	EndTime int64	`bson:"endTime"`   //执行结束时间
 }
 
 // 一条日志
@@ -24,6 +24,7 @@ type LogRecord struct {
 	TimePoint TimePoint `bson:"timePoint"`// 执行时间点
 }
 
+//插入1条数据
 func main() {
 	var (
 		client *mongo.Client
@@ -35,7 +36,7 @@ func main() {
 		docId objectid.ObjectID
 	)
 	// 1, 建立连接
-	if client, err = mongo.Connect(context.TODO(), "mongodb://36.111.184.221:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
+	if client, err = mongo.Connect(context.TODO(), "mongodb://127.0.0.1:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
 		fmt.Println(err)
 		return
 	}

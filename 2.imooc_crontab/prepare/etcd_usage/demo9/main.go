@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"context"
 )
-
+//实现一个乐观锁:
+//lease:实现锁自动过期,防止节点down掉后死锁
+//txn事务: if else then
 func main() {
 	var (
 		config clientv3.Config
@@ -26,7 +28,7 @@ func main() {
 
 	// 客户端配置
 	config = clientv3.Config{
-		Endpoints: []string{"36.111.184.221:2379"},
+		Endpoints:   []string{"127.0.0.1:2379"},
 		DialTimeout: 5 * time.Second,
 	}
 
@@ -36,9 +38,6 @@ func main() {
 		return
 	}
 
-	// lease实现锁自动过期:
-	// op操作
-	// txn事务: if else then
 
 	// 1, 上锁 (创建租约, 自动续租, 拿着租约去抢占一个key)
 	lease = clientv3.NewLease(client)
@@ -55,8 +54,10 @@ func main() {
 	// 准备一个用于取消自动续租的context
 	ctx, cancelFunc = context.WithCancel(context.TODO())
 
+	// defer 会把租约释放掉, 关联的KV就被删除了
 	// 确保函数退出后, 自动续租会停止
 	defer cancelFunc()
+	// 释放租约,立刻释放租约从而立刻删除key
 	defer lease.Revoke(context.TODO(), leaseId)
 
 	// 5秒后会取消自动续租
@@ -81,14 +82,18 @@ func main() {
 	END:
 	}()
 
-	//  if 不存在key， then 设置它, else 抢锁失败
+	//  if 不存在key{
+	// 		设置它
+	// }  else
+	// {
+	// 		抢锁失败
+	// }
 	kv = clientv3.NewKV(client)
 
 	// 创建事务
 	txn = kv.Txn(context.TODO())
 
 	// 定义事务
-
 	// 如果key不存在
 	txn.If(clientv3.Compare(clientv3.CreateRevision("/cron/lock/job9"), "=", 0)).
 		Then(clientv3.OpPut("/cron/lock/job9", "xxx", clientv3.WithLease(leaseId))).
@@ -106,11 +111,12 @@ func main() {
 		return
 	}
 
-	// 2, 处理业务
-
+	// 2, 抢锁成功处理业务
 	fmt.Println("处理任务")
 	time.Sleep(5 * time.Second)
 
 	// 3, 释放锁(取消自动续租, 释放租约)
-	// defer 会把租约释放掉, 关联的KV就被删除了
+	//取消自动续租:假如之前的租约是10 那么这个key在取消自动续约后10秒后过期
+	//释放租约:就是强制删除租约 那么这个key立刻删除
+
 }

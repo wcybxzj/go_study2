@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+//watch例子:
+//使用GO API比较麻烦还需要获取revision+key才能进行watch
+//1个协程写入删除一个key
+//主协程watch这个key
+//主协程给watcher的channel设置了5秒超时
 func main() {
 	var (
 		config             clientv3.Config
@@ -39,6 +44,7 @@ func main() {
 	kv = clientv3.NewKV(client)
 
 	// 模拟etcd中KV的变化
+	// 生成1个key 然后删除它
 	go func() {
 		for {
 			kv.Put(context.TODO(), "/cron/jobs/job7", "i am job7")
@@ -60,6 +66,7 @@ func main() {
 		fmt.Println("当前值:", string(getResp.Kvs[0].Value))
 	}
 
+	// 从下一个事务ID进行监控
 	// 当前etcd集群事务ID, 单调递增的
 	watchStartRevision = getResp.Header.Revision + 1
 
@@ -77,13 +84,17 @@ func main() {
 	watchRespChan = watcher.Watch(ctx, "/cron/jobs/job7", clientv3.WithRev(watchStartRevision))
 
 	// 处理kv变化事件
+	//CreateRevision:key创建的revision
+	//ModRevision:key最后修改的revision
 	for watchResp = range watchRespChan {
 		for _, event = range watchResp.Events {
 			switch event.Type {
 			case mvccpb.PUT:
-				fmt.Println("修改为:", string(event.Kv.Value), "Revision:", event.Kv.CreateRevision, event.Kv.ModRevision)
+				fmt.Println("修改为:", string(event.Kv.Value),
+					"CreateRevision(key第一次创建这个key时的版本):", event.Kv.CreateRevision,
+					"ModRevision(key最后一次修改的版本):", event.Kv.ModRevision)
 			case mvccpb.DELETE:
-				fmt.Println("删除了", "Revision:", event.Kv.ModRevision)
+				fmt.Println("删除了", "ModRevision:", event.Kv.ModRevision)
 			}
 		}
 	}

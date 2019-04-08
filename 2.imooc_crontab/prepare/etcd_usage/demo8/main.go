@@ -7,6 +7,21 @@ import (
 	"time"
 )
 
+//op+do操作取代 get/put/delete
+//目的:为学习分布式锁做准备
+
+//第一次执行
+//写入Revision: 109
+//CreateRevision: 109  -------------
+//ModRevision: 109
+//数据value: 123123123
+
+//第二次执行
+//写入Revision: 110
+//CreateRevision: 109 --------------
+//ModRevision: 110
+//数据value: 123123123
+
 func main() {
 	var (
 		config clientv3.Config
@@ -43,7 +58,6 @@ func main() {
 	}
 
 	// kv.Do(op)
-
 	// kv.Put
 	// kv.Get
 	// kv.Delete
@@ -60,6 +74,8 @@ func main() {
 	}
 
 	// 打印
-	fmt.Println("数据Revision:", opResp.Get().Kvs[0].ModRevision) // create rev == mod rev
+	fmt.Println("CreateRevision:", opResp.Get().Kvs[0].CreateRevision) // create rev == mod rev
+	fmt.Println("ModRevision:", opResp.Get().Kvs[0].ModRevision) // create rev == mod rev
+
 	fmt.Println("数据value:", string(opResp.Get().Kvs[0].Value))
 }

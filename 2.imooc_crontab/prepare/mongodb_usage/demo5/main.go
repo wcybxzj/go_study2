@@ -29,7 +29,8 @@ func main() {
 		delResult *mongo.DeleteResult
 	)
 	// 1, 建立连接
-	if client, err = mongo.Connect(context.TODO(), "mongodb://36.111.184.221:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
+	if client, err = mongo.Connect(context.TODO(),
+		"mongodb://127.0.0.1:27017", clientopt.ConnectTimeout(5 * time.Second)); err != nil {
 		fmt.Println(err)
 		return
 	}
