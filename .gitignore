@@ -6,3 +6,6 @@ web_admin
 *.exe
 *.log
 2.imooc_crontab/crontab/master/main/master
+2.imooc_crontab/crontab/worker/main/my_worker
+2.imooc_crontab/crontab/worker/main/my_worker2
+2.imooc_crontab/crontab/worker/main/worker

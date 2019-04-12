@@ -49,15 +49,6 @@ func main() {
 	// 拿到租约的ID
 	leaseId = leaseGrantResp.ID
 
-	//测试1:代码有问题我懒的看为什么
-	//续租5秒,停止了续租,原来10秒的生命周期,最终10+5=15秒的生命周期
-	//ctx,_ := context.WithTimeout(context.TODO(), 5*time.Second)
-	//if keepRespChan, err = lease.KeepAlive(ctx, leaseId); err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-
-	//测试2:
 	//每秒续租一次
 	if keepRespChan, err = lease.KeepAlive(context.TODO(), leaseId); err != nil {
 		fmt.Println(err)
@@ -72,7 +63,9 @@ func main() {
 				if keepRespChan == nil {
 					fmt.Println("租约已经失效了")
 					goto END
-				} else { // 每秒会续租一次, 所以就会受到一次应答
+				} else {
+					// 每秒会续租一次, 所以就会受到一次应答
+					//keepResp.ID 租约ID
 					fmt.Println("收到自动续租应答:", keepResp.ID)
 				}
 			}
