@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"go_study2/1.xorm/models"
-	)
+	"github.com/wcybxzj/go_study2/1.xorm/models"
+)
 
 const prompt =`plz enter a number
 1.create new account
