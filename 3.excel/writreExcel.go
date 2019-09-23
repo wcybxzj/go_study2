@@ -19,13 +19,22 @@ func main() {
 		fmt.Printf(err.Error())
 	}
 
-	for i:=0;i < 100 ;i++  {
+	row = sheet.AddRow()
+	//row.SetHeightCM(1)
+	cell = row.AddCell()
+	cell.Value = "mobile"
+	cell = row.AddCell()
+	cell.Value = "userid"
+
+	for i:=0;i < 100000 ;i++  {
 		row = sheet.AddRow()
 		//row.SetHeightCM(1)
 		cell = row.AddCell()
-		cell.Value = "姓名"
+		cell.Value = "17710750086"
+		/*
 		cell = row.AddCell()
-		cell.Value = "年龄"
+		cell.Value = "0"
+		*/
 	}
 
 	err = file.Save("test_write.xlsx")

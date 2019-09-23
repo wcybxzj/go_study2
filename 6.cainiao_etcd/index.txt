@@ -1,0 +1,90 @@
+https://www.bilibili.com/video/av40776475?from=search&seid=15745079765748317712
+【菜鸟窝出品】1. ETCD全解析及快速入门指南第一讲
+============================================================
+1.ectd用处3个用处
+
+1-1.存储数据
+
+1-2.共享配置
+多个节点要共享配置并且都要读写
+
+1-3.服务发现
+比如你有一套自己的服务是集群,要选主时候也可以用etcd
+
+1-4.快照
+
+1-5.历史事件
+============================================================
+2.数据模型
+
+持久+多版+并发控制
+
+最大支持1MB的单条数据
+
+============================================================
+3.主要功能
+
+3-1.key-val写入与读取
+
+3-2.expire-time
+一个key的过期时间
+
+3-3.watcher
+观察一个key或者一个目录产生的事件
+主要用在事件通知或者状态变化的情况中
+
+3-4.续租
+抽象的过期时间,一个统一的过期时间，用于管理多个key
+可以对多个key进行过期时间关联到一个租约上
+
+租约还可以续期
+
+3-5.集群管理的相关操作
+
+3-6.维护操作
+
+3-7.用户及权限管理
+
+3-8.分布式锁
+
+3-9.选举
+
+=================================================================================================
+tar -zxvf etcd-v3.4.1-darwin-amd64.zip -C ~/soft/
+
+强制使用v3版的etcd
+vim ~/.bash_profile
+或者
+vim /etc/profile
+
+export ETCDCTL_API=3
+=================================================================================================
+启动本地单机
+cd /Users/ybx/soft/etcd-v3.4.1-darwin-amd64
+./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd/conf.yml
+=================================================================================================
+启动本地集群
+推荐奇数节点,方便选举
+cd /Users/ybx/soft/etcd-v3.4.1-darwin-amd64
+
+./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd1/conf.yml
+./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd2/conf.yml
+./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd3/conf.yml
+
+查看版本
+./etcdctl version
+
+curl http://127.0.0.1:2379/version
+
+查看集群成员
+./etcdctl member list
+
+查看leader状态
+./etcdctl endpoint status --cluster -w table
+=================================================================================================
+主要命令
+./etcdctl put /message Hello
+./etcdctl get /message
+
+=================================================================================================
+

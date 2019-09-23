@@ -9,3 +9,7 @@ web_admin
 2.imooc_crontab/crontab/worker/main/my_worker
 2.imooc_crontab/crontab/worker/main/my_worker2
 2.imooc_crontab/crontab/worker/main/worker
+6.cainiao_etcd/etcd_cluster/etcd1/data
+6.cainiao_etcd/etcd_cluster/etcd2/data
+6.cainiao_etcd/etcd_cluster/etcd3/data
+6.cainiao_etcd/etcd/etcd/data

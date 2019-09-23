@@ -102,15 +102,38 @@ func DealExcel(filePath string) ([][]string, error) {
 	return data, err
 }
 
+func test1()  {
+	//arr := [][]string
+	arr := make([][]string, 10)
+
+	fmt.Println(len(arr))
+
+	var i int
+
+	for i, _ := range arr{
+		arr[i] = make([]string, 2)
+		arr[i][0] ="123"
+		arr[i][1] ="456"
+		fmt.Println("i:%d", i)
+	}
+
+	//fmt.Println(arr)
+
+	fmt.Println("==========")
+
+	fmt.Println(i)
+}
+
+
 func main() {
 	var data[][]string
 
 	for i:=0; i<100000; i++ {
-		data,_ = DealExcel("/root/www/go_www/src/go_study2/3.excel/1.xlsx")
+		data,_ = DealExcel("/Users/ybx/www/go_www2/go_study2/3.excel/1.xlsx")
 		fmt.Println(data)
-		data,_ = DealExcel("/root/www/go_www/src/go_study2/3.excel/1.xls")
+		data,_ = DealExcel("/Users/ybx/www/go_www2/go_study2/3.excel/1.xls")
 		fmt.Println(data)
-		data,_ = DealExcel("/root/www/go_www/src/go_study2/3.excel/1.csv")
+		data,_ = DealExcel("/Users/ybx/www/go_www2/go_study2/3.excel/1.csv")
 		fmt.Println(data)
 	}
 }

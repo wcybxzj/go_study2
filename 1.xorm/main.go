@@ -18,6 +18,7 @@ const prompt =`plz enter a number
 10.获取总数
 11.迭代方式1
 12.迭代方式2
+13.测试where_in
 99.exit
 `
 
@@ -120,7 +121,17 @@ Exit:
 		case 12:
 			models.Iterate2()
 
-
+		case 13:
+			//var ids []uint
+			//var ids []uint64
+			var ids []int64
+			ids = append(ids, 1)
+			ids = append(ids, 3)
+			accounts := models.TestIn(ids)
+			for _, account := range accounts{
+				fmt.Println(account.Id)
+				fmt.Println(account.Name)
+			}
 
 
 		case 99:

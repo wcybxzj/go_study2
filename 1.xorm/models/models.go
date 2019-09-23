@@ -1,13 +1,12 @@
 package models
 
-
 import (
-	_ "github.com/go-sql-driver/mysql"//只执行里面的init,不使用里面的API
-	"github.com/go-xorm/xorm"
-	"log"
-	"github.com/pkg/errors"
 	"fmt"
-	)
+	_ "github.com/go-sql-driver/mysql" //只执行里面的init,不使用里面的API
+	"github.com/go-xorm/xorm"
+	"github.com/pkg/errors"
+	"log"
+)
 
 //这里xorm这个tag是让xorm来识别的
 //所有字段必须首字母大写才能让xorm反射出去
@@ -158,6 +157,14 @@ func Iterate2()  {
 		}
 		fmt.Printf("%#v\n",a)
 	}
+}
 
-
+func TestIn(ids[]int64) ([]*Account){
+	var err error
+	accounts := make([]*Account, 0)
+	err = x.Cols("id", "name").In("id", ids).Limit(1,0).Find(&accounts)
+	if err != nil {
+		panic("err:"+err.Error())
+	}
+	return accounts
 }

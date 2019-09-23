@@ -1,0 +1,9 @@
+name: master
+initial-advertise-peer-urls: http://0.0.0.0:2380
+listen-peer-urls: http://0.0.0.0:2380
+listen-client-urls: http://127.0.0.1:2379,http://127.0.0.1:2379
+advertise-client-urls: http://127.0.0.1:2379
+initial-cluster-token: etcd-cluster-1
+initial-cluster: master=http://127.0.0.1:2380,node2=http://127.0.0.1:12380,node3=http://127.0.0.1:22380
+initial-cluster-state: new
+data-dir: /Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd1/data
