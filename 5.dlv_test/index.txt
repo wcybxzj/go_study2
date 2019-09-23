@@ -1,0 +1,12 @@
+http://i.scwy.net/go/2019/090222-delve/
+
+测试1:
+cd dlv_test
+dlv debug
+(dlv) break main.main
+(dlv) continue
+
+测试2:
+dlv debug --headless --listen=:2345 --api-version=2 --accept-multiclient
+dlv debug --headless --listen=:2345 --api-version=2
+idea使用remote go来debug 2345
