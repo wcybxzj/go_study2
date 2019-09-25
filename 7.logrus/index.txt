@@ -1,0 +1,10 @@
+https://blog.csdn.net/wslyk606/article/details/81670713
+
+log核心:
+https://github.com/sirupsen/logrus
+
+存储到文件插件:
+https://github.com/rifflock/lfshook
+
+文件分割插件
+https://github.com/lestrrat-go/file-rotatelogs
