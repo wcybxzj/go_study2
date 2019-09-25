@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	log2 "github.com/sirupsen/logrus"
+	log4 "github.com/sirupsen/logrus"
 	"log"
 )
 
@@ -13,7 +13,7 @@ func test1()  {
 
 //logrus的方式
 func test2()  {
-	log2.WithFields(log2.Fields{
+	log4.WithFields(log4.Fields{
 		"event": 111,
 		"topic": 22,
 		"key": 33,

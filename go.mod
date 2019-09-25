@@ -2,9 +2,13 @@ module github.com/wcybxzj/go_study2
 
 go 1.12
 
-replace zuji/common => ../common
+replace (
+	github.com/apache/rocketmq-client-go => ../vendor/rocketmq-client-go
+	zuji/common => ../common
+)
 
 require (
+	github.com/apache/rocketmq-client-go v0.0.0-00010101000000-000000000000
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
 	github.com/coreos/bbolt v1.3.3 // indirect
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
