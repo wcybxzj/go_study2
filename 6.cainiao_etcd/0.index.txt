@@ -67,9 +67,10 @@ cd /Users/ybx/soft/etcd-v3.4.1-darwin-amd64
 推荐奇数节点,方便选举
 cd /Users/ybx/soft/etcd-v3.4.1-darwin-amd64
 
-./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd1/conf.yml
-./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd2/conf.yml
-./etcd --config-file=/Users/ybx/www/go_www2/go_study2/6.cainiao_etcd/etcd_cluster/etcd3/conf.yml
+
+nohup ./etcd --config-file=/Users/ybx/www/go_www2/zuji/go_study2/6.cainiao_etcd/etcd_cluster/etcd1/conf.yml &
+nohup ./etcd --config-file=/Users/ybx/www/go_www2/zuji/go_study2/6.cainiao_etcd/etcd_cluster/etcd2/conf.yml &
+nohup ./etcd --config-file=/Users/ybx/www/go_www2/zuji/go_study2/6.cainiao_etcd/etcd_cluster/etcd3/conf.yml &
 
 查看版本
 ./etcdctl version
@@ -81,10 +82,17 @@ curl http://127.0.0.1:2379/version
 
 查看leader状态
 ./etcdctl endpoint status --cluster -w table
++------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+|        ENDPOINT        |        ID        | VERSION | DB SIZE | IS LEADER | IS LEARNER | RAFT TERM | RAFT INDEX | RAFT APPLIED INDEX | ERRORS |
++------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+| http://127.0.0.1:12379 | 8211f1d0f64f3269 |   3.4.1 |   25 kB |     false |      false |        31 |          9 |                  9 |        |
+| http://127.0.0.1:22379 | 91bc3c398fb3c146 |   3.4.1 |   25 kB |     false |      false |        31 |          9 |                  9 |        |
+|  http://127.0.0.1:2379 | bf9071f4639c75cc |   3.4.1 |   25 kB |      true |      false |        31 |          9 |                  9 |        |
++------------------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 member list
+
 =================================================================================================
-主要命令
-./etcdctl put /message Hello
-./etcdctl get /message
 
 =================================================================================================
 

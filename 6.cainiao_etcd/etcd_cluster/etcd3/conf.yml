@@ -1,5 +1,5 @@
 name: node3
-initial-advertise-peer-urls: http://0.0.0.0:22380
+initial-advertise-peer-urls: http://127.0.0.1:22380
 listen-peer-urls: http://0.0.0.0:22380
 listen-client-urls: http://127.0.0.1:22379,http://127.0.0.1:22379
 advertise-client-urls: http://127.0.0.1:22379
