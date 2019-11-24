@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"go.etcd.io/etcd/clientv3"
+	"log"
 	"time"
 )
 
@@ -32,10 +33,11 @@ func main() {
 	}
 
 	// 建立一个客户端
-	if client, err = clientv3.New(config); err != nil {
-		fmt.Println(err)
-		return
+	cli, err := clientv3.New(config)
+	if err != nil {
+		log.Fatal(err)
 	}
+	defer cli.Close()
 
 	// 申请一个lease（租约）
 	lease = clientv3.NewLease(client)

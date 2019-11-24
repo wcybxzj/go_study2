@@ -1,0 +1,381 @@
+./etcdctl lock --help
+===============================================================================================
+
+主要命令
+1.Access etcd
+./etcdctl put /message Hello
+./etcdctl get /message
+./etcdctl get /logagent/conf/
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 put foo "Hello World"
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 get foo
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 --write-out="json" get foo
+===============================================================================================
+2.1 Get by prefix
+./etcdctl  put web1 value1
+./etcdctl  put web2 value2
+./etcdctl  put web3 value3
+./etcdctl  get web --prefix
+
+===============================================================================================
+2.2 put小技巧
+cat 1.txt
+11 22 33
+
+cat 1.txt|./etcdctl put ybx
+OK
+
+./etcdctl get ybx
+ybx
+11 22 33
+===============================================================================================
+2.3 put的时候获取返回之前的key-value
+./etcdctl put ybx 456 --prev-kv=true
+OK
+ybx
+11 22 33
+===============================================================================================
+3.Delete
+./etcdctl put key myvalue
+./etcdctl del key
+./etcdctl put k1 value1
+./etcdctl put k2 value2
+
+获取所有k开头的
+./etcdctl get k --prefix
+
+删除所有k开头的
+./etcdctl del k --prefix
+===============================================================================================
+4.Transactional write
+事务中
+
+===============================================================================================
+4.1事务例子1:
+./etcdctl  put user1 bad
+./etcdctl  txn --interactive
+
+compares:(比较条件)
+value("user1") = "bad"
+
+success requests (get, put, delete):（如果比较条件为真）
+del user1
+
+failure requests (get, put, delete):（如果比较条件为假）
+put user1 good
+
+SUCCESS (因为上边的条件是true)
+1 (del user1 的结果)
+
+翻译:
+if (user1 == bad){
+    del user1
+}else{
+    put user1 good
+}
+===============================================================================================
+4.1事务例子2:
+./etcdctl  put user1 11111
+
+./etcdctl  txn --interactive
+compares:
+value("user1") = "bad"
+
+success requests (get, put, del):
+del user1
+
+failure requests (get, put, del):
+put user1 good
+
+FAILURE(因为上边的条件是fail)
+OK (put user1 good 的结果)
+
+./etcdctl get user1
+user1
+good
+===============================================================================================
+5.watch(一般用于事件通知，或者状态变化的场景下)
+term1:
+./etcdctl  watch stock1
+
+term2:
+./etcdctl  put stock1 1000
+
+term1:
+./etcdctl  watch stock --prefix
+
+term2:
+./etcdctl  put stock1 10
+./etcdctl  put stock2 20
+===============================================================================================
+6.lease租约
+
+6.1 创建租约后就开始计时
+6.2 1个租约-->1个时间-->多个key
+6.3 租约超时或者删除后所有key都消失
+
+生成租约
+grant		Creates leases
+续租回复成原来设置的超时时间
+keep-alive	Keeps leases alive (renew)
+查看租约
+list		List all active leases
+删除租约
+revoke		Revokes leases(撤销租约)
+查看续租
+timetolive	Get lease information
+
+./etcdctl lease grant 300
+# lease 01e96df75a971d12 granted with TTL(300s)
+./etcdctl put sample value --lease=01e96df75a971d12
+./etcdctl get sample
+
+./etcdctl put sample2 value2 --lease=01e96df75a971d12
+./etcdctl get sample2
+
+./etcdctl lease list 01e96df75a971d12
+found 1 leases
+75cc6d7bebfe2336
+
+./etcdctl lease timetolive 01e96df75a971d12
+lease 75cc6d7bebfe2336 granted with TTL(300s), remaining(145s)
+
+./etcdctl lease revoke 01e96df75a971d12
+# or after 300 seconds
+
+./etcdctl get sample
+./etcdctl get sample2
+===============================================================================================
+6.4 续租例1:
+持续续租一旦超时就重新续租
+
+term1:
+./etcdctl lease grant 30
+./etcdctl lease keep-alive 01e96df75a971d21
+lease 01e96df75a971d1f keepalived with TTL(30)
+lease 01e96df75a971d1f keepalived with TTL(30)
+lease 01e96df75a971d1f keepalived with TTL(30)
+
+term2:
+./etcdctl lease timetolive 01e96df75a971d21
+===============================================================================================
+6.5 续租例2:
+只续租一次,然后立刻退出
+./etcdctl lease grant 30
+lease 01e96df75a971d25 granted with TTL(30s)
+./etcdctl lease keep-alive --once=true 01e96df75a971d25
+===============================================================================================
+7.Distributed locks
+
+分布式锁的一点资料
+https://blog.csdn.net/wuzhiwei549/article/details/80692278
+
+
+
+./etcdctl lock -h
+
+term1:获取锁
+./etcdctl lock mutex1
+
+term2:获取不到锁阻塞
+# another client with the same name blocks
+./etcdctl lock mutex1
+===============================================================================================
+8.Elections选举
+
+8.1例子1
+term1:
+./etcdctl elect one p1
+one/75cc6d7bebfe2351
+p1
+
+term2:
+./etcdctl elect one p2  阻塞
+
+term1:
+ctrl+c
+
+term2:
+./etcdctl elect one p2
+one/75cc6d7bebfe2357
+p2
+
+===============================================================================================
+8.2
+term1:
+./etcdctl elect one p1
+
+term2:
+./etcdctl elect one  --listen
+one/1e96df75a971d2c
+p1
+
+term3:
+./etcdctl elect one p2
+
+term1:
+ctrl+C
+
+term2:
+./etcdctl elect one  --listen
+one/1e96df75a971d2c
+p1
+one/1e96df75a971d35
+p2
+===============================================================================================
+9.Cluster status
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379  --write-out=table endpoint status
++-----------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+|    ENDPOINT     |        ID        | VERSION | DB SIZE | IS LEADER | IS LEARNER | RAFT TERM | RAFT INDEX | RAFT APPLIED INDEX | ERRORS |
++-----------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+|  127.0.0.1:2379 | 86e179c498c701e9 |   3.4.1 |   20 kB |     false |      false |        10 |         33 |                 33 |        |
+| 127.0.0.1:12379 | 471d456e36bca1bd |   3.4.1 |   20 kB |      true |      false |        10 |         33 |                 33 |        |
+| 127.0.0.1:22379 | 89a6c41f5729ff2d |   3.4.1 |   20 kB |     false |      false |        10 |         33 |                 33 |        |
++-----------------+------------------+---------+---------+-----------+------------+-----------+------------+--------------------+--------+
+
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 endpoint health --write-out=table
++-----------------+--------+------------+-------+
+|    ENDPOINT     | HEALTH |    TOOK    | ERROR |
++-----------------+--------+------------+-------+
+| 127.0.0.1:12379 |   true | 6.064324ms |       |
+|  127.0.0.1:2379 |   true | 7.570958ms |       |
+| 127.0.0.1:22379 |   true | 7.593392ms |       |
++-----------------+--------+------------+-------+
+===============================================================================================
+10.Snapshot
+./etcdctl  put my.db 123
+
+./etcdctl  snapshot save my.db
+
+Snapshot saved at my.db
+
+./etcdctl --write-out=table snapshot status my.db
++----------+----------+------------+------------+
+|   HASH   | REVISION | TOTAL KEYS | TOTAL SIZE |
++----------+----------+------------+------------+
+| 92c542d9 |       39 |         46 |      33 kB |
++----------+----------+------------+------------+
+===============================================================================================
+11.Migrate
+# write key in etcd version 2 store
+export ETCDCTL_API=2
+etcdctl --endpoints=http://$ENDPOINT set foo bar
+
+# read key in etcd v2
+etcdctl --endpoints=$ENDPOINTS --output="json" get foo
+
+# stop etcd node to migrate, one by one
+
+# migrate v2 data
+export ETCDCTL_API=3
+etcdctl --endpoints=$ENDPOINT migrate --data-dir="default.etcd" --wal-dir="default.etcd/member/wal"
+
+# restart etcd node after migrate, one by one
+
+# confirm that the key got migrated
+etcdctl --endpoints=$ENDPOINTS get /foo
+===============================================================================================
+12.Member
+增加或者删除集群中的节点
+./etcdctl member list
+===============================================================================================
+13.Auth
+./etcdctl role add root
+./etcdctl role grant-permission root readwrite foo
+./etcdctl role get root
+
+./etcdctl user add root  我输入了密码123456
+./etcdctl user grant-role root root
+./etcdctl user get root
+
+./etcdctl auth enable
+# now all client requests go through auth
+
+./etcdctl --user=root:123456 put foo bar
+./etcdctl get foo
+./etcdctl --user=root:123456 get foo
+./etcdctl --user=root:123456 get foo1
+
+./etcdctl --user=root:123456 auth disable
+===============================================================================================
+14.revisions
+revisions:是一个etcd全局的概念
+
+
+./etcdctl get ybx
+ybx
+123
+
+./etcdctl get ybx -w=json
+{
+    "header":{"cluster_id":4417195629721298530,"member_id":9719183356125970921,"revision":2,"raft_term":3},
+    "kvs":[{"key":"eWJ4","create_revision":2,"mod_revision":2,"version":1,"value":"MTIz"}],"count":1
+}
+集群版本:2
+ybx版本:create_revision":2,"mod_revision":2,"version":1
+
+./etcdctl put ybx 456
+OK
+
+./etcdctl get ybx -w=json
+{
+    "header":{"cluster_id":4417195629721298530,"member_id":9719183356125970921,"revision":3,"raft_term":3},
+    "kvs":[{"key":"eWJ4","create_revision":2,"mod_revision":3,"version":2,"value":"NDU2"}],"count":1
+}
+集群版本:3
+ybx版本:create_revision":2,"mod_revision"3,"version":2
+
+./etcdctl put wc 789
+OK
+
+./etcdctl get wc -w=json
+{
+"header":{"cluster_id":4417195629721298530,"member_id":9719183356125970921,"revision":4,"raft_term":3},
+"kvs":[{"key":"d2M=","create_revision":4,"mod_revision":4,"version":1,"value":"Nzg5"}],"count":1
+}
+集群版本:4
+wc版本:create_revision":4,"mod_revision"4,"version":1
+
+./etcdctl get ybx -w=json
+{
+"header":{"cluster_id":4417195629721298530,"member_id":9719183356125970921,"revision":4,"raft_term":3},
+"kvs":[{"key":"eWJ4","create_revision":2,"mod_revision":3,"version":2,"value":"NDU2"}],"count":1
+}
+集群版本:4
+ybx版本:create_revision":2,"mod_revision"3,"version":2
+
+./etcdctl put ybx 003
+./etcdctl put ybx 004
+./etcdctl put ybx 005
+./etcdctl put ybx 006
+./etcdctl put ybx 007
+./etcdctl put ybx 008
+./etcdctl put ybx 009
+./etcdctl put ybx 010
+
+./etcdctl get ybx -w=json
+{
+ "header":{"cluster_id":4417195629721298530,"member_id":9719183356125970921,"revision":12,"raft_term":3},
+ "kvs":[{"key":"eWJ4","create_revision":2,"mod_revision":12,"version":10,"value":"MDEw"}],"count":1
+}
+
+这里的--rev说是key的版本但是实际是集群版本
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 get ybx --rev=14
+
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 --user=$ETCDCREDS get revisiontestkey -w json
+{"header":{"cluster_id":4417195629721298530,"member_id":5124328290684543421,"revision":14,"raft_term":10}}
+
+./etcdctl --endpoints=127.0.0.1:2379,127.0.0.1:12379,127.0.0.1:22379 --user=$ETCDCREDS get ybx -w json
+{"header":{"cluster_id":4417195629721298530,"member_id":5124328290684543421,"revision":14,"raft_term":10},"kvs":[{"key":"eWJ4","create_revision":2,"mod_revision":14,"version":12,"value":"NDU2"}],"count":1}
+
+===============================================================================================
+思考1:分布式锁和一般锁的区别
+一般的锁:指的都是进程或者线程锁,也就是都在一台机器上
+分布式锁:使用者是网路中的不同的机器
+
+思考2:为什么有了watch机制还要分布式锁和选举
+因为语义不同
+watch:是观察一个key的是否已产生了新的事件
+分布式锁:是多个客户端来通过锁来避免并发中的对不能并发中对不能并发资源的访问
+选举:
+===============================================================================================
+===============================================================================================

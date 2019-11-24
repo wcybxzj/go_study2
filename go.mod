@@ -11,7 +11,7 @@ require (
 	github.com/apache/rocketmq-client-go v0.0.0-00010101000000-000000000000
 	github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394
 	github.com/coreos/bbolt v1.3.3 // indirect
-	github.com/coreos/etcd v3.3.13+incompatible // indirect
+	github.com/coreos/etcd v3.3.13+incompatible
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd v0.0.0-20190719114852-fd7a80b32e1f // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
