@@ -31,6 +31,7 @@ require (
 	github.com/lestrrat-go/apache-logformat v2.0.4+incompatible
 	github.com/lestrrat-go/file-rotatelogs v2.2.0+incompatible
 	github.com/lestrrat-go/strftime v0.0.0-20190725011945-5c849dd2c51d // indirect
+	github.com/mailru/easyjson v0.7.0
 	github.com/mongodb/mongo-go-driver v1.0.4
 	github.com/pkg/errors v0.8.1
 	github.com/prometheus/client_golang v1.1.0 // indirect
@@ -38,6 +39,8 @@ require (
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/sirupsen/logrus v1.4.2
 	github.com/soheilhy/cmux v0.1.4 // indirect
+	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/stretchr/testify v1.4.0
 	github.com/tealeg/xlsx v1.0.3
 	github.com/tebeka/strftime v0.1.3 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
@@ -52,5 +55,7 @@ require (
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/yaml.v2 v2.2.7 // indirect
 	zuji/common v0.0.0-00010101000000-000000000000
 )

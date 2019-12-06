@@ -13,3 +13,9 @@ web_admin
 6.cainiao_etcd/etcd_cluster/etcd2/data
 6.cainiao_etcd/etcd_cluster/etcd3/data
 6.cainiao_etcd/etcd/etcd/data
+*.prof
+*.svg
+prof
+trace_val
+trace_ref
+trace.out
